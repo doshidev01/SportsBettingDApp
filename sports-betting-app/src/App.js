@@ -1,34 +1,54 @@
-// src/App.js
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes} from 'react-router-dom';
-import HomePage from './components/Homepage';
+import React, { useState, useEffect } from 'react';
+import { ethers } from 'ethers';
 
-function App() {
-  const [isAdmin, setIsAdmin] = useState(true); // Set to true for testing, replace with actual logic
-  const [isRoomOwner, setIsRoomOwner] = useState(true); // Set to true for testing, replace with actual logic
+import GameCard from './components/GameCard';
+import GameDetails from './components/GameDetails';
+import RoomDetails from './components/RoomDetails';
 
-  const createGame = () => {
-    // Add logic to call the createGame function in your smart contract
-    console.log('Creating game...');
-  };
+const App = () => {
+  // Replace with your contract address and ABI
+  const contractAddress = '0x...';
+  const abi = [ /* ... contract ABI ... */ ];
 
-  const createRoom = () => {
-    // Add logic to call the createRoom function in your smart contract
-    console.log('Creating room...');
-  };
+  // Initialize ethers provider and contract instance
+  const provider = ethers.getDefaultProvider();
+  const contract = new ethers.Contract(contractAddress, abi, provider);
+
+  // State to manage selected game and room
+  const [selectedGameID, setSelectedGameID] = useState(null);
+  const [selectedRoomID, setSelectedRoomID] = useState(null);
 
   return (
-    <Router>
-      <Routes>
-        <Route
-          path="/"
-          render={() => (
-            <HomePage isAdmin={isAdmin} isRoomOwner={isRoomOwner} createGame={createGame} createRoom={createRoom} />
-          )}
-        /> 
-      </Routes>       
-    </Router>
+    <div className="App">
+      <h1>My Sports Betting App</h1>
+
+      <GameCard
+        contract={contract}
+        selectedGameID={selectedGameID}
+        setSelectedGameID={setSelectedGameID}
+        selectedRoomID={selectedRoomID}
+        setSelectedRoomID={setSelectedRoomID}
+      />
+
+      {selectedGameID && <GameDetails gameID={selectedGameID} contract={contract} />}
+
+      {selectedRoomID && <RoomDetails roomID={selectedRoomID} contract={contract} />}
+
+      <nav>
+        <a href="#">Games</a>
+        <a href="#">My Bets</a>
+        <a href="#">Account</a>
+      </nav>
+
+      <p>Username: johndoe</p>
+      <p>Balance: 1.5 ETH</p>
+
+      <footer>
+        <a href="#">Terms & Conditions</a>
+        <p>© 2023 My Sports Betting App</p>
+      </footer>
+    </div>
   );
-}
+};
 
 export default App;
